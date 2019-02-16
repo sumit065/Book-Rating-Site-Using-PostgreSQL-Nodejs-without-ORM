@@ -66,6 +66,19 @@ app.post('/add', (req, res)=>{
 	});
 });
 
+app.delete('/delete/:id', function(req, res){
+	pool.connect(function(err, client, done){
+		if(err){
+			return console.error('error fetching client from pool', err);
+		}
+		client.query('DELETE FROM book WHERE id= $1',[req.params.id]);
+			
+		done();
+		res.sendStatus(200);	
+		
+	});
+});
+
 
 app.listen(3000, ()=>{
 	console.log('Server Started on port 3000');

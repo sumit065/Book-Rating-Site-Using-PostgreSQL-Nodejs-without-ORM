@@ -12,6 +12,7 @@
 			<tr>
 				<td>{name}</td> 
 				<td> {id} </td>
+				<td> <button type="button" class="btn btn-danger delete-book" data-id = "{id}">Delete</button> </td>
 			</tr>
 			{/books}
 		</table>	
