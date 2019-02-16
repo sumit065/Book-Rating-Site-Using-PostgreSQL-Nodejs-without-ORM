@@ -1,0 +1,59 @@
+{>"layout" /}
+
+{<body}
+
+	<div class = "container">
+		<table style = "width:50%">  
+			<tr>
+				<th> <h5>Book Name </h5></th> 
+				<th> <h5>Book Id </h5></th>
+			</tr>
+			{#books}
+			<tr>
+				<td>{name}</td> 
+				<td> {id} </td>
+			</tr>
+			{/books}
+		</table>	
+	</div>
+
+
+	<div class="container">
+	  <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Insert Book</button>
+	</div>
+
+ 
+	<div class="modal fade" id="myModal" role="dialog">
+	    <div class="modal-dialog">
+	 
+	    <div class="modal-content">
+	      	<form method = "post" action = "/add">
+			        <div class="modal-header">
+			          <h4 class="modal-title">Add Book</h4>
+			        </div>
+			        <div class="modal-body">
+			          
+			         	<div class = "form-group">
+			          		<label>Name</label>
+			          		<input type = "text" class = "form-control" name = "name" />
+			          	</div>
+
+			          	<div class = "form-group">
+			          		<label>Id</label>
+			          		<input type = "text" class = "form-control" name = "id" />
+			          	</div>
+
+
+			        </div>
+			        <div class="modal-footer">
+			          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			          <input type= "submit" class="btn btn-primary" value="Save" />
+			        </div>
+	    	</form>
+	    </div>
+	      
+	    </div>
+	</div>
+	
+{/body}
+
