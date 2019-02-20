@@ -6,6 +6,7 @@ var express = require('express'),
 	pg = require('pg'),
 	app = express();
 
+
 //DB connection string
 //var connectionString = 'postgresql://sumit:12345@localhost/prodb'	
 
@@ -35,11 +36,12 @@ const pool = new pg.Pool(config);
 
 
 app.get('/', (req, res)=>{
+	
 	pool.connect(function(err, client, done){
 		if(err){
 			return console.error('error fetching client from pool', err);
 		}
-		client.query('SELECT * FROM book', function(err, result){
+		client.query('SELECT * FROM (select * from books order by average_rating desc limit 5)as hehe', function(err, result){
 			if(err){
 				return console.error('error running query', err);
 			}
@@ -51,18 +53,66 @@ app.get('/', (req, res)=>{
 
 		});
 	});
+	
 });
+
+
+app.post('/login', (req, res)=>{
+	
+	pool.connect(function(err, client, done){
+		if(err){
+			return console.error('error fetching client from pool', err);
+		}
+		client.query('SELECT * FROM users WHERE userid= $1 AND password=$2',[req.body.uname, req.body.psw], function(err, result){
+			if(err){
+				return console.error('error running query', err);
+				
+			}
+			if(result.rowCount == 0){res.render('index', {'wrongid':'a'});}
+			else{
+				var x= result.rows[0].userid;
+				res.send('Hello '+ x);
+			}
+			
+		});
+	});
+	
+});
+
+
+app.get('/newpage', function(req, res){	
+		res.sendFile(__dirname+"/display.html");
+		//res.sendStatus(200);	
+});
+
+
 
 app.post('/add', (req, res)=>{
 	pool.connect(function(err, client, done){
 		if(err){
 			return console.error('error fetching client from pool', err);
 		}
-		client.query('INSERT INTO book(name, id) VALUES($1,$2)',[req.body.name, req.body.id]);
+		client.query('INSERT INTO book(name, id) VALUES($1,$2)',[req.body.name, req.body.id])
 			
 		done();
 		res.redirect('/');	
 		
+	});
+});
+
+app.post('/signup', (req, res)=>{
+	pool.connect(function(err, client, done){
+		if(err){
+			return console.error('error fetching client from pool', err);
+		}
+		client.query('INSERT INTO users(userid, password) VALUES($1,$2)',[req.body.uid, req.body.pwd],(err,result)=>{
+			if(err){
+				res.render('index', {'already':['a']});
+			}
+		});
+		
+		done();
+
 	});
 });
 
