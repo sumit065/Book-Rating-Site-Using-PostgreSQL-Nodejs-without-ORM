@@ -68,7 +68,7 @@ app.post('/login', (req, res)=>{
 				return console.error('error running query', err);
 				
 			}
-			if(result.rowCount == 0){res.render('index', {'wrongid':'a'});}
+			if(result.rowCount == 0){res.render('invalidlogin', {'wrongid':'a'});}
 			else{
 				var x= result.rows[0].userid;
 				res.send('Hello '+ x);
@@ -107,7 +107,7 @@ app.post('/signup', (req, res)=>{
 		}
 		client.query('INSERT INTO users(userid, password) VALUES($1,$2)',[req.body.uid, req.body.pwd],(err,result)=>{
 			if(err){
-				res.render('index', {'already':['a']});
+				res.render('invalidlogin', {'already':'a'});
 			}
 		});
 		
