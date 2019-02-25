@@ -7,6 +7,12 @@ var express = require('express'),
 	app = express();
 
 
+
+
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
+var jsonParser = bodyParser.json();
 //DB connection string
 //var connectionString = 'postgresql://sumit:12345@localhost/prodb'	
 
@@ -20,9 +26,6 @@ app.set('views', __dirname+'/views');
 //Set public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended:false}));
 
 const config = {
 	  user: 'sumit',
@@ -41,7 +44,7 @@ app.get('/', (req, res)=>{
 		if(err){
 			return console.error('error fetching client from pool', err);
 		}
-		client.query('SELECT * FROM (select * from books order by average_rating desc limit 5)as hehe', function(err, result){
+		client.query('SELECT * FROM (SELECT * FROM books ORDER BY average_rating DESC LIMIT 5)AS hehe', function(err, result){
 			if(err){
 				return console.error('error running query', err);
 			}
@@ -56,14 +59,98 @@ app.get('/', (req, res)=>{
 	
 });
 
-
-app.post('/login', (req, res)=>{
-	
+app.get('/top20', (req, res)=>{
 	pool.connect(function(err, client, done){
 		if(err){
 			return console.error('error fetching client from pool', err);
 		}
-		client.query('SELECT * FROM users WHERE userid= $1 AND password=$2',[req.body.uname, req.body.psw], function(err, result){
+		client.query('select * from books where original_publication_year>=2009 order by average_rating desc limit 20 ', function(err, result){
+			if(err){
+				return console.error('error running query', err);
+			}
+			//myFunction(result);
+			//res.sendFile(path.join(__dirname+'display.html'));
+			res.render('index2',{books: result.rows});
+			//console.log(res);  //uncomment to see result object on console
+			//note that result.row is an array of objects
+		});
+	});
+});
+
+app.get('/favourites', (req, res)=>{
+	pool.connect(function(err, client, done){
+		if(err){
+			return console.error('error fetching client from pool', err);
+		}
+    const query1 = {
+	   text: "select books.book_id,books.isbn13,books.authors,books.original_publication_year,books.title,books.language_code,books.average_rating from(select * from viewbookidtagname where tag_name ilike $1)as hehe inner join books on books.book_id=hehe.book_id order by average_rating desc limit 50",
+	   values: ['all-time-favourites'],
+ 	};
+		client.query(query1, function(err, result){
+			if(err){
+				return console.error('error running query', err);
+			}
+			//myFunction(result);
+			//res.sendFile(path.join(__dirname+'display.html'));
+			res.render('indexfavourites',{books: result.rows});
+			//console.log(res);  //uncomment to see result object on console
+			//note that result.row is an array of objects
+		});
+	});
+});
+
+app.get('/review/:leg', function(req, res, next) {
+  pool.connect(function(err, client, done){
+    if(err){
+      return console.error('error fetching client from pool', err);
+    }
+    const query1 = {
+   text: "select * from books inner join reviews on reviews.book_id=books.book_id where books.book_id=$1",
+   values:[req.params.leg],
+ };
+    client.query(query1, function(err, result){
+      if(err){
+        return console.error('error running query', err);
+      }
+      //myFunction(result);
+      var array=[];
+      array=result.rows;
+      //res.sendFile(path.join(__dirname+'display.html'));
+      res.render('indexreview',{books: result.rows,book:array[0]});
+     
+    });
+  });
+});
+
+
+app.get('/:leg', function(req, res, next) {
+  pool.connect(function(err, client, done){
+    if(err){
+      return console.error('error fetching client from pool', err);
+    }
+    const query1 = {
+	   text: "SELECT * FROM books WHERE original_publication_year=$1",
+	   values:[req.params.leg],
+	 };
+    client.query(query1, function(err, result){
+      if(err){
+        return console.error('error running query', err);
+      }
+      res.render('indexfavourites',{books: result.rows});
+      
+    });
+  });
+});
+
+
+app.post('/login', (req, res)=>{
+	
+
+	pool.connect(function(err, client, done){
+		if(err){
+			return console.error('error fetching client from pool', err);
+		}
+		client.query('SELECT * FROM users WHERE username= $1 AND userid=$2',[req.body.uname, req.body.psw], function(err, result){
 			if(err){
 				return console.error('error running query', err);
 				
@@ -71,7 +158,7 @@ app.post('/login', (req, res)=>{
 			if(result.rowCount == 0){res.render('invalidlogin', {'wrongid':'a'});}
 			else{
 				var x= result.rows[0].userid;
-				res.send('Hello '+ x);
+				res.render('login', {'loginpage':result.rows});
 			}
 			
 		});
@@ -79,12 +166,40 @@ app.post('/login', (req, res)=>{
 	
 });
 
+app.post('/review/:leg', function(req, res, next) {
+  pool.connect(function(err, client, done){
+    if(err){
+      return console.error('error fetching client from pool', err);
+    }
+    const query1 = {
+   text: "insert into reviews values($1,$2,$3)",
+   values:[req.params.leg,req.body.review,req.body.name1],
+ };
+    client.query(query1, function(err, result){
+      if(err){
+        return console.error('error running query', err);
+      }
+      //myFunction(result);
+      var array=[];
+      array=result.rows;
+      //res.sendFile(path.join(__dirname+'display.html'));
+      //res.render('indexreview',{books: result.rows,book:array[0]});
+      var redirecturl="/review/"+req.params.leg;
+      res.redirect(redirecturl);
+  		done();
 
+
+ 		});
+ 	});
+});
+
+					
+/*
 app.get('/newpage', function(req, res){	
 		res.sendFile(__dirname+"/display.html");
 		//res.sendStatus(200);	
 });
-
+*/
 
 
 app.post('/add', (req, res)=>{
@@ -92,10 +207,9 @@ app.post('/add', (req, res)=>{
 		if(err){
 			return console.error('error fetching client from pool', err);
 		}
-		client.query('INSERT INTO book(name, id) VALUES($1,$2)',[req.body.name, req.body.id])
-			
-		done();
-		res.redirect('/');	
+		client.query('INSERT INTO userbook(userid, book_name) VALUES($1, $2)',[req.body.uname,req.body.name]);
+			var arr=[{book:req.body.name}]
+      		res.render('addpage', {'newpage':arr});	
 		
 	});
 });
@@ -105,15 +219,61 @@ app.post('/signup', (req, res)=>{
 		if(err){
 			return console.error('error fetching client from pool', err);
 		}
-		client.query('INSERT INTO users(userid, password) VALUES($1,$2)',[req.body.uid, req.body.pwd],(err,result)=>{
+		client.query('INSERT INTO users(username, userid) VALUES($1,$2)',[req.body.uid, req.body.pwd],(err,result)=>{
 			if(err){
 				res.render('invalidlogin', {'already':'a'});
 			}
+			else{
+				res.redirect('/');
+			}
 		});
 		
-		done();
+		
 
 	});
+});
+
+
+app.post('/addedbooks', (req, res)=>{
+	pool.connect(function(err, client, done){
+		if(err){
+			return console.error('error fetching client from pool', err);
+		}
+		client.query('SELECT * FROM userbook WHERE userid=$1',[req.body.uId],function(err, result){
+	      if(err){
+	        return console.error('error running query', err);
+	      }
+	      res.render('indexfavourites',{'addedbook': result.rows});
+      
+    
+			
+		done();
+
+			});
+		
+	});
+});
+
+app.post('/ratedbooks', (req, res)=>{
+	
+	pool.connect(function(err, client, done){
+		if(err){
+			return console.error('error fetching client from pool', err);
+		}
+		client.query('SELECT DISTINCT title FROM toread,books WHERE user_id=$1 limit 10',[req.body.uId],function(err, result){
+			if(err){
+				return console.error('error running query', err);
+				console.log(req.body.uId);
+			}
+			
+			
+			res.render('indexfavourites', {'userbook':result.rows});
+			console.log(req.body.uId);  
+			done();
+			
+		});
+	});
+	
 });
 
 app.delete('/delete/:id', function(req, res){
@@ -129,6 +289,57 @@ app.delete('/delete/:id', function(req, res){
 	});
 });
 
+app.post('/search', (req, res)=>{
+	pool.connect(function(err, client, done){
+    const data = {
+     name : req.body.name,
+      year : req.body.year,
+   }
+   if(data.year!='')
+   {
+   const query1 = {
+  text: "SELECT * from books where title ilike '%' || $1 || '%' and authors ilike '%' || $2 || '%' and original_publication_year=$3",
+  values: [req.body.name,req.body.Author,req.body.year],
+};
+
+		if(err){
+			return console.error('error fetching client from pool', err);
+		}
+		client.query(query1, function(err, result){
+			if(err){
+				return console.error('error running query', err);
+			}
+			//myFunction(result);
+			//res.sendFile(path.join(__dirname+'display.html'));
+			res.render('index1',{books: result.rows});
+			//console.log(res);  //uncomment to see result object on console
+			//note that result.row is an array of objects
+		});
+  }
+  else
+  {
+    const query1 = {
+   text: "SELECT * from books where title ilike '%' || $1 || '%' and authors ilike '%' || $2 || '%' ",
+   values: [req.body.name,req.body.Author],
+ };
+
+ 		if(err){
+ 			return console.error('error fetching client from pool', err);
+ 		}
+ 		client.query(query1, function(err, result){
+ 			if(err){
+ 				return console.error('error running query', err);
+ 			}
+ 			//myFunction(result);
+ 			//res.sendFile(path.join(__dirname+'display.html'));
+ 			res.render('index1',{books: result.rows});
+
+ 			//console.log(res);  //uncomment to see result object on console
+ 			//note that result.row is an array of objects
+ 		});
+  }
+	});
+});
 
 app.listen(3000, ()=>{
 	console.log('Server Started on port 3000');

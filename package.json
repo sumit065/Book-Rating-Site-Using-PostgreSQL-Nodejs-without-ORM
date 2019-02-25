@@ -1,0 +1,27 @@
+{
+  "name": "worksp2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "create": "node ./services/db createTables"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "consolidate": "*",
+    "dust": "*",
+    "dustjs-helpers": "^1.6.3",
+    "dustjs-linkedin": "^2.6.2",
+    "express": "*",
+    "make-runnable": "^1.3.6",
+    "pg": "^7.8.0",
+    "popups": "^1.1.3"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
+  }
+}
