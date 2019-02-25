@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+    <html>
+	    <head>
+	        <title>Error</title>
+	    </head>
+	    <body>
+	    	<h1>Error</h1>
+	    	<h2 style="color:red;" align="middle">{?already} Already Exists  {/already} </h2>
+	        <button type="button" method="get" action="/">Go Back</button>
+	    </body>
+    </html>

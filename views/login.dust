@@ -1,0 +1,168 @@
+{>"layout" /}
+
+<style>
+		input[type=text], input[type=password] {
+		  width: 100%;
+		  padding: 9px 20px;
+		  margin: 8px 0;
+		  display: inline-block;
+		  border: 1px solid #ccc;
+		  box-sizing: border-box;
+		}
+
+		button {
+		  background-color: #4CAF96;
+		  color: white;
+		  padding: 12px 20px;
+		  margin: 8px 0;
+		  border: none;
+		  cursor: pointer;
+		  width: 100%;
+		}
+
+		.button2 {background-color: #BA2E00;}
+</style>
+
+{<body}
+	
+	
+	
+	<div class="row">
+		<div class="col-md-10 col-md-offset-2">
+			<h2 align="middle">Hello {#loginpage}{username}{/loginpage} </h2>
+			<div align="middle">
+			    <img src="avatar2.png" width= "100" height= "100"  class="img-circle">
+			</div>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-md-10 col-md-offset-2">
+			
+			<br>
+			<br>
+			<label>Know Any Books? Share with us</label>
+			<button data-toggle="modal" data-target="#myModal3">Add Book</button>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-10 col-md-offset-2">
+			
+			<br>
+			<br>
+			<label>Browse To-Read Books</label>
+			<form method="post" action="/ratedbooks">
+				<input type="hidden"  name="uId" id="pwd" {#loginpage}value={userid} {/loginpage}>
+				<button  id="btn" type="submit">Browse</button>
+			</form>
+		</div>
+	</div>
+
+	<div class="modal fade" id="myModal3" role="dialog">
+	    <div class="modal-dialog">
+	 
+	    <div class="modal-content">
+	      	<form method = "post" action="/add">
+			        <div class="modal-header">
+			          <h4 class="modal-title">Add Book</h4>
+			        </div>
+			        <div class="modal-body">
+			          
+			         	<div class = "form-group">
+			          		<label>Name</label>
+			          		<input type = "text" class = "form-control" name = "name" />
+			          		<input type="hidden" id="uId" name="uname" {#loginpage}value={userid} {/loginpage}>
+			          	</div>
+
+
+
+			        </div>
+			        <div class="modal-footer">
+			          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			          <input type= "submit" class="btn btn-primary" value="Save" />
+			        </div>
+	    	</form>
+	    </div>
+	      
+	    </div>
+	</div>
+
+	
+	{#userbook}
+	<div class="row">
+		<div class="col-md-10 col-md-offset-2">
+			
+			    <div class="well">
+			    	
+					    <h4>{title}</h4>
+				</div>
+			
+		</div>
+	</div>
+	{/userbook}
+
+{/body}
+
+
+
+
+
+
+
+{<body1}
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+
+	<div class="row">
+		<div class="col-md-10 col-md-offset-2">
+			
+			<br>
+			<br>
+			<label>Logout</label>
+			<button class="button button2 home-page" formmethod="get" formaction="/">Logout</button>
+		</div>
+	</div>
+{/body1}
+
+
+
+
+
+
+
+
+
+{<body2}
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	
+
+	<div class="row">
+		<div class="col-md-10 col-md-offset-2">
+			
+			<br>
+			<br>
+			<label>See The Books You Have Added</label>
+			<form method="post" action="/addedbooks">
+				<input type="hidden"  name="uId" id="pwd" {#loginpage}value={userid} {/loginpage}>
+				<button  id="btn" type="submit">My Books</button>
+			</form>
+		</div>
+	</div>
+
+{/body2}

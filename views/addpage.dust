@@ -1,0 +1,17 @@
+{>"layout" /}
+{<body}
+
+	
+	<script>
+	function goBack() {
+ 	 window.history.back();
+	}
+	</script>
+	<h1 align="middle" style="color:green;"> Congratulations!</h1>
+	<h2 align = "middle"> You Have Added A New Book </h2>
+	<h4 align="middle" style="color:blue;">{#newpage} {book}{/newpage}</h4>
+	<br>
+	<br>
+	<button type="button" class="btn btn-primary btn-block" onclick="goBack()">Go Back</button>
+
+{/body}
